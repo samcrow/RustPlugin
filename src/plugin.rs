@@ -5,7 +5,7 @@ pub struct PluginInfo<'a, 'b, 'c> {
     pub description: &'c str,
 }
 
-pub trait Plugin: Sized {
+pub trait Plugin : Sized {
     /// Does initialization
     /// On success, returns a plugin
     fn start() -> Option<Self>;

@@ -12,7 +12,7 @@ extern crate xplm;
 type PluginType = TestPlugin;
 type PluginPtr = *mut PluginType;
 // The plugin
-static mut PLUGIN: *mut PluginType = 0 as PluginPtr;
+static mut PLUGIN: PluginPtr = 0 as PluginPtr;
 
 #[allow(non_snake_case)]
 #[no_mangle]
@@ -20,7 +20,10 @@ pub unsafe extern "C" fn XPluginStart(outName: *mut libc::c_char, outSig: *mut l
     outDescription: *mut libc::c_char) -> libc::c_int
 {
     // Enable native paths
-    let _ = xplm::features::set_feature_enabled("XPLM_USE_NATIVE_PATHS", true);
+    let feature_result = xplm::features::set_feature_enabled("XPLM_USE_NATIVE_PATHS", true);
+    if feature_result.is_err() {
+        xplm::debug("Failed to enable XPLM_USE_NATIVE_PATHS\n");
+    }
 
     // Create the plugin, temporarily, on the stack
     let plugin_option = PluginType::start();
