@@ -11,7 +11,10 @@ fn main() {
         println!("cargo:rustc-link-lib=framework=XPLM");
         println!("cargo:rustc-link-lib=framework=XPWidgets");
     }
+    else if target.contains("-linux-") {
+        // Do nothing for Linux
+    }
     else {
-        panic!("Windows (target = {}) is not yet supported", target);
+        panic!("Unknown operating system (target = {}) is not supported", target);
     }
 }
