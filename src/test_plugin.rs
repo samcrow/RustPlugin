@@ -5,9 +5,12 @@ use xplm::data::*;
 use xplm::dataref::*;
 use xplm::flight_loop::*;
 
+use probe::ProbeTestHolder;
+
 pub struct TestPlugin {
     dataref: DataRef<f32, ReadOnly>,
     flight_loop: Option<FlightLoop>,
+    probe_test: Option<ProbeTestHolder>,
 }
 
 impl Plugin for TestPlugin {
@@ -19,6 +22,7 @@ impl Plugin for TestPlugin {
                 Some(TestPlugin {
                     dataref: dataref,
                     flight_loop: None,
+                    probe_test: None,
                 })
             },
             Err(e) => {
@@ -43,11 +47,14 @@ impl Plugin for TestPlugin {
         });
         flight_loop.schedule(NextCallback::after_seconds(1.0));
         self.flight_loop = Some(flight_loop);
+
+        self.probe_test = Some(ProbeTestHolder::new());
     }
     /// Called when the plugin is disabled
     fn disable(&mut self) {
         debug("Test Rust plugin disabling\n");
         self.flight_loop = None;
+        self.probe_test = None;
     }
 
     fn stop(&mut self) {
