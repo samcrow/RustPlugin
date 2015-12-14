@@ -10,6 +10,4 @@ crate-type = ["dylib"]
 [dependencies]
 libc = "^0.2"
 xplane_plugin = "^0.1"
-
-[dependencies.xplm]
-git = "https://github.com/samcrow/rust-xplm"
+xplm = "^0.1"
