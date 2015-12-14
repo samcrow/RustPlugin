@@ -1,7 +1,7 @@
-use plugin::PluginInfo;
-use plugin::Plugin;
+use xplane_plugin::{Plugin, PluginInfo};
 extern crate xplm;
 use xplm::debug;
+use xplm::data::*;
 use xplm::dataref::*;
 use xplm::flight_loop::*;
 
@@ -66,6 +66,6 @@ impl Plugin for TestPlugin {
 
 impl Drop for TestPlugin {
     fn drop(&mut self) {
-
+        debug("Test Rust plugin dropped\n");
     }
 }

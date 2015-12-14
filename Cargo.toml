@@ -3,14 +3,13 @@ name = "rust_plugin"
 version = "0.1.0"
 authors = ["Sam Crow <samcrow@uw.edu>"]
 
-build = "link.rs"
-
 [lib]
 name = "rust_plugin"
 crate-type = ["dylib"]
 
 [dependencies]
 libc = "^0.2"
+xplane_plugin = "^0.1"
 
 [dependencies.xplm]
 git = "https://github.com/samcrow/rust-xplm"
