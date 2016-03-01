@@ -2,8 +2,10 @@ use xplane_plugin::{Plugin, PluginInfo};
 extern crate xplm;
 use xplm::debug;
 use xplm::data::*;
-use xplm::dataref::*;
+use xplm::data::dataref::*;
 use xplm::flight_loop::*;
+use xplm::ui::Rect;
+use xplm::ui::widget::{Widget, Window, Pane, Button, CheckBox};
 
 use probe::ProbeTestHolder;
 
@@ -11,11 +13,13 @@ pub struct TestPlugin {
     dataref: DataRef<f32, ReadOnly>,
     flight_loop: Option<FlightLoop>,
     probe_test: Option<ProbeTestHolder>,
+    window: Option<Window>,
 }
 
 impl Plugin for TestPlugin {
 
     fn start() -> Option<Self> {
+        xplm::enable_debug_logging();
         debug("Test Rust plugin starting\n");
         match DataRef::find("sim/time/total_running_time_sec") {
             Ok(dataref) => {
@@ -23,6 +27,7 @@ impl Plugin for TestPlugin {
                     dataref: dataref,
                     flight_loop: None,
                     probe_test: None,
+                    window: None,
                 })
             },
             Err(e) => {
@@ -49,12 +54,33 @@ impl Plugin for TestPlugin {
         self.flight_loop = Some(flight_loop);
 
         self.probe_test = Some(ProbeTestHolder::new());
+
+        let button_listener = || {
+            debug("Button pressed\n");
+        };
+        let checkbox_listener = |checked: bool| {
+            debug(&format!("Check box value changed: checked = {}\n", checked));
+        };
+
+        let mut window = Window::new("Rust Window", &Rect{ left: 100, top: 400, right: 600, bottom: 100 });
+        let pane = Pane::new("Pane", &Rect{ left: 120, top: 370, right: 580, bottom: 120 });
+
+        let button = Button::new("Eat Pie", &Rect{ left: 130, top: 140, right: 200, bottom: 130 }, button_listener);
+        let checkbox = CheckBox::new(&Rect{ left: 130, top: 160, right: 200, bottom: 150 }, checkbox_listener);
+
+
+        window.add_child(Box::new(pane));
+        window.add_child(Box::new(button));
+        window.add_child(Box::new(checkbox));
+        window.set_visible(true);
+        self.window = Some(window);
     }
     /// Called when the plugin is disabled
     fn disable(&mut self) {
         debug("Test Rust plugin disabling\n");
         self.flight_loop = None;
         self.probe_test = None;
+        self.window = None;
     }
 
     fn stop(&mut self) {

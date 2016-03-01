@@ -1,7 +1,7 @@
 
 use xplm;
 use xplm::data::*;
-use xplm::dataref::DataRef;
+use xplm::data::dataref::DataRef;
 use xplm::terrain::Probe;
 use xplm::flight_loop::*;
 use xplm::position::*;
