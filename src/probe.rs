@@ -1,7 +1,6 @@
 
 use xplm;
-use xplm::data::*;
-use xplm::data::dataref::DataRef;
+use xplm::data::{Borrowed, Readable, ReadOnly};
 use xplm::terrain::Probe;
 use xplm::flight_loop::*;
 use xplm::position::*;
@@ -26,18 +25,18 @@ impl ProbeTestHolder {
 }
 
 struct ProbeTest {
-    aircraft_x: DataRef<f64, ReadOnly>,
-    aircraft_z: DataRef<f64, ReadOnly>,
-    aircraft_y: DataRef<f64, ReadOnly>,
+    aircraft_x: Borrowed<f64, ReadOnly>,
+    aircraft_z: Borrowed<f64, ReadOnly>,
+    aircraft_y: Borrowed<f64, ReadOnly>,
     probe: Probe,
 }
 
 impl ProbeTest {
     pub fn new() -> ProbeTest {
         ProbeTest {
-            aircraft_x: DataRef::find("sim/flightmodel/position/local_x").unwrap(),
-            aircraft_y: DataRef::find("sim/flightmodel/position/local_y").unwrap(),
-            aircraft_z: DataRef::find("sim/flightmodel/position/local_z").unwrap(),
+            aircraft_x: Borrowed::find("sim/flightmodel/position/local_x").unwrap(),
+            aircraft_y: Borrowed::find("sim/flightmodel/position/local_y").unwrap(),
+            aircraft_z: Borrowed::find("sim/flightmodel/position/local_z").unwrap(),
             probe: Probe::new(),
         }
     }

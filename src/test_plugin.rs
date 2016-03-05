@@ -1,8 +1,7 @@
-use xplane_plugin::{Plugin, PluginInfo};
+use xplm::{Plugin, PluginInfo};
 extern crate xplm;
 use xplm::debug;
-use xplm::data::*;
-use xplm::data::dataref::*;
+use xplm::data::{Borrowed, Readable, ReadOnly};
 use xplm::flight_loop::*;
 use xplm::ui::Rect;
 use xplm::ui::widget::{Widget, Window, Pane, Button, CheckBox};
@@ -10,7 +9,7 @@ use xplm::ui::widget::{Widget, Window, Pane, Button, CheckBox};
 use probe::ProbeTestHolder;
 
 pub struct TestPlugin {
-    dataref: DataRef<f32, ReadOnly>,
+    dataref: Borrowed<f32, ReadOnly>,
     flight_loop: Option<FlightLoop>,
     probe_test: Option<ProbeTestHolder>,
     window: Option<Window>,
@@ -18,12 +17,12 @@ pub struct TestPlugin {
 
 impl Plugin for TestPlugin {
 
-    fn start() -> Option<Self> {
+    fn start() -> Result<Self, Box<::std::error::Error>> {
         xplm::enable_debug_logging();
         debug("Test Rust plugin starting\n");
-        match DataRef::find("sim/time/total_running_time_sec") {
+        match Borrowed::find("sim/time/total_running_time_sec") {
             Ok(dataref) => {
-                Some(TestPlugin {
+                Ok(TestPlugin {
                     dataref: dataref,
                     flight_loop: None,
                     probe_test: None,
@@ -32,7 +31,7 @@ impl Plugin for TestPlugin {
             },
             Err(e) => {
                 debug(&format!("Failed to find dataref: {:?}\n", e));
-                None
+                Err(Box::new(e))
             }
         }
     }
@@ -42,7 +41,7 @@ impl Plugin for TestPlugin {
         debug(&format!("running time = {}\n", self.dataref.get()));
 
         // Get the aircraft tail number
-        let tail_number_dataref: DataRef<String, ReadOnly> = DataRef::find("sim/aircraft/view/acf_tailnum").unwrap();
+        let tail_number_dataref: Borrowed<String, ReadOnly> = Borrowed::find("sim/aircraft/view/acf_tailnum").unwrap();
         debug(&format!("Tail number = {}\n", tail_number_dataref.get()));
 
         let dataref_copy = self.dataref.clone();
@@ -88,12 +87,18 @@ impl Plugin for TestPlugin {
     }
 
     /// Returns information on this plugin
-    fn info<'a, 'b, 'c>(&self) -> PluginInfo<'a, 'b, 'c> {
+    fn info() -> PluginInfo {
         PluginInfo {
             name: "Rust Plugin",
             signature: "org.samcrow.rustplugin",
             description: "A plugin written in Rust",
         }
+    }
+
+    fn message_from_plugin(&mut self, _: i32, _: xplm::ipc::Plugin) {
+    }
+
+    fn message_from_xplane(&mut self, _: xplm::ipc::XPlaneMessage) {
     }
 }
 
